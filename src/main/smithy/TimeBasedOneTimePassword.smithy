@@ -9,6 +9,7 @@ string Code
 string ID
 
 @simpleRestJson
+@httpApiKeyAuth(name: "X-myApiz-Key", in: "header")
 service Service {
     version: "1.0.0"
     operations: [Generate, Validate]

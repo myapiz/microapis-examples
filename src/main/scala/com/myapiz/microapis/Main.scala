@@ -3,13 +3,11 @@ package com.myapiz.microapis
 import cats.effect.*
 import cats.implicits.*
 import com.comcast.ip4s.*
-import com.myapiz.microapis.otp.{Code, ID, OTP, OTPServiceImpl, OneTimePassword, Service, ValidationResponse}
+import com.myapiz.microapis.otp.{OTPServiceImpl, Service}
 import org.http4s.*
 import org.http4s.ember.server.*
 import org.http4s.implicits.*
 import smithy4s.http4s.SimpleRestJsonBuilder
-
-import scala.concurrent.duration.*
 
 object Routes {
   protected[microapis] val otp: Resource[IO, HttpRoutes[IO]] =
