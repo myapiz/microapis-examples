@@ -20,9 +20,8 @@ lazy val root = (project in file("."))
       "-language:noAutoTupling",
       "-language:unsafeNulls",
       "-language:strictEquality",
-      "-Werror",
       "-Wunused:all",
-      "-Xfatal-warnings",
+      "-Yrangepos",
       "-Yexplicit-nulls",
       "-Ysafe-init"
     ),

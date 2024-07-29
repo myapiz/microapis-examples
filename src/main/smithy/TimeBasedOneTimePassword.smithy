@@ -5,28 +5,32 @@ use smithy.api#String
 use smithy.api#required
 use alloy#simpleRestJson
 
+string Code
+string ID
+
 @simpleRestJson
-service OneTimePasswordService {
+service Service {
     version: "1.0.0"
     operations: [Generate, Validate]
 }
 
-@http(method: "POST", uri: "/otp/{id}", code: 200)
+@http(method: "POST", uri: "/totp/{id}", code: 200)
 operation Generate {
-    input: OTPRequest
+    input: GenerateRequest
     output: OTP
 }
 
-@http(method: "GET", uri: "/opt/{id}/{code}", code: 200)
+@readonly
+@http(method: "GET", uri: "/totp/{id}/{code}", code: 200)
 operation Validate {
     input: ValidationRequest
     output: ValidationResponse
 }
 
-structure OTPRequest {
+structure GenerateRequest {
     @required
     @httpLabel
-    id: String
+    id: ID
 
     ttl: Integer
     size: Integer
@@ -34,7 +38,21 @@ structure OTPRequest {
 
 structure OTP {
     @required
-    code: String
+    code: Code
+}
+
+structure ValidationRequest {
+    @required
+    @httpLabel
+    id: ID
+
+    @required
+    @httpLabel
+    code: Code
+
+    @httpQuery("ttl")
+    ttl: Integer
+
 }
 
 structure ValidationResponse {
@@ -42,13 +60,3 @@ structure ValidationResponse {
     valid: Boolean
 }
 
-structure ValidationRequest {
-    @required
-    @httpLabel
-    id: String
-
-    @required
-    @httpLabel
-    code: String
-
-}

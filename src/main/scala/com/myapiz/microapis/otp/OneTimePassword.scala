@@ -1,4 +1,4 @@
-package com.myapiz.microapis
+package com.myapiz.microapis.otp
 
 import com.bastiaanjansen.otp.{HMACAlgorithm, TOTPGenerator}
 
@@ -11,7 +11,7 @@ trait OneTimePassword {
     s"my-special-$id-secret".getBytes
   }
 
-  def generate(id: String, ttl: FiniteDuration, size: Int): String = {
+  def generateTOTP(id: String, ttl: FiniteDuration, size: Int): String = {
     val totp = TOTPGenerator
       .Builder(secret(id))
       .withHOTPGenerator(builder => {
@@ -24,9 +24,16 @@ trait OneTimePassword {
 
     totp.now
   }
-  def verify(id: String, code: String): Boolean = {
+
+  def verifyTOTP(id: String, ttl: FiniteDuration, size: Int, code: String): Boolean = {
     val totp = TOTPGenerator
       .Builder(secret(id))
+      .withHOTPGenerator(builder => {
+        builder.withPasswordLength(size)
+        builder.withAlgorithm(HMACAlgorithm.SHA256) // SHA256 and SHA512 are also supported
+        ()
+      })
+      .withPeriod(toJava(ttl))
       .build()
 
     totp.verify(code)
