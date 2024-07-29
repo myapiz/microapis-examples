@@ -3,9 +3,9 @@ val CirceVersion = "0.14.9"
 val MunitVersion = "1.0.0"
 val LogbackVersion = "1.5.6"
 val MunitCatsEffectVersion = "2.0.0"
-import smithy4s.codegen.Smithy4sCodegenPlugin
-
 val CatsVersion = "3.5.4"
+val smithyVersion = "1.50.0"
+import smithy4s.codegen.Smithy4sCodegenPlugin
 
 lazy val root = (project in file("."))
   .enablePlugins(Smithy4sCodegenPlugin)
@@ -19,11 +19,7 @@ lazy val root = (project in file("."))
       "-feature",
       "-language:noAutoTupling",
       "-language:unsafeNulls",
-      "-language:strictEquality",
-      "-Wunused:all",
-      "-Yrangepos",
-      "-Yexplicit-nulls",
-      "-Ysafe-init"
+      "-language:strictEquality"
     ),
     libraryDependencies ++= Seq(
       "org.typelevel" %% "cats-effect" % CatsVersion,
@@ -32,7 +28,10 @@ lazy val root = (project in file("."))
       "org.http4s" %% "http4s-circe" % Http4sVersion,
       "org.http4s" %% "http4s-dsl" % Http4sVersion,
       "com.disneystreaming.smithy4s" %% "smithy4s-http4s" % smithy4sVersion.value,
+      "software.amazon.smithy" % "smithy-model" % smithyVersion,
       "com.disneystreaming.smithy4s" %% "smithy4s-http4s-swagger" % smithy4sVersion.value,
+      "com.disneystreaming.alloy" % "alloy-core" % "0.3.11",
+      "io.circe" %% "circe-parser" % CirceVersion,
       // otp
       "com.github.bastiaanjansen" % "otp-java" % "2.0.3",
       // Loggin

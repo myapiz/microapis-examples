@@ -1,18 +1,20 @@
+$version: "2"
+
 namespace com.myapiz.microapis.otp
 
-use smithy.api#Boolean
-use smithy.api#String
 use smithy.api#required
 use alloy#simpleRestJson
 
 string Code
 string ID
 
+
 @simpleRestJson
-@httpApiKeyAuth(name: "X-myApiz-Key", in: "header")
+@httpApiKeyAuth(name: "X-myapiz-user", in: "header")
 service Service {
     version: "1.0.0"
     operations: [Generate, Validate]
+    errors: [NotAuthorizedError]
 }
 
 @http(method: "POST", uri: "/totp/{id}", code: 200)
@@ -33,8 +35,8 @@ structure GenerateRequest {
     @httpLabel
     id: ID
 
-    ttl: Integer
-    size: Integer
+    ttl: Integer = 60
+    size: Integer = 6
 }
 
 structure OTP {
@@ -52,7 +54,7 @@ structure ValidationRequest {
     code: Code
 
     @httpQuery("ttl")
-    ttl: Integer
+    ttl: Integer = 60
 
 }
 
@@ -61,3 +63,10 @@ structure ValidationResponse {
     valid: Boolean
 }
 
+
+@error("client")
+@httpError(401)
+structure NotAuthorizedError {
+    @required
+    message: String
+}
