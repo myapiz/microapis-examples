@@ -1,0 +1,73 @@
+{
+  "$schema": "https://www.krakend.io/schema/krakend.json",
+  "version": 3,
+  "name": "KrakenD - API Gateway",
+  "extra_config": {
+    "security/cors": {
+      "allow_origins": [
+        "*"
+      ],
+      "allow_methods": [
+        "GET",
+        "HEAD",
+        "POST"
+      ],
+      "expose_headers": [
+        "Content-Length",
+        "Content-Type"
+      ],
+      "allow_headers": [
+        "Accept-Language",
+        "Authorization",
+        "x-api-key"
+      ],
+      "max_age": "12h",
+      "allow_credentials": false,
+      "debug": false
+    }
+  },
+  "endpoints": [
+    {
+      "endpoint": "/totp/{id}",
+      "method": "POST",
+      "input_headers": [
+        "X-myapiz-user"
+      ],
+      "timeout": "5s",
+      "backend": [
+        {
+          "url_pattern": "/totp/{id}",
+          "method": "POST",
+          "host": [
+            "http://localhost:9000"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/totp/{id}/{code}",
+      "method": "GET",
+      "input_headers": [
+        "X-myapiz-user"
+      ],
+      "input_query_strings": [
+        "ttl"
+      ],
+      "backend": [
+        {
+          "url_pattern": "/totp/{id}/{code}",
+          "method": "GET",
+          "host": [
+            "http://localhost:9000"
+          ]
+        }
+      ]
+    }
+  ],
+  "timeout": "10s",
+  "cache_ttl": "300s",
+  "output_encoding": "no-op",
+  "port": 9090,
+  "echo_endpoint": true,
+  "debug_endpoint": true
+}
