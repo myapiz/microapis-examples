@@ -5,9 +5,9 @@ val LogbackVersion = "1.5.6"
 val MunitCatsEffectVersion = "2.0.0"
 val CatsVersion = "3.5.4"
 val smithyVersion = "1.50.0"
-import smithy4s.codegen.Smithy4sCodegenPlugin
 
 lazy val root = (project in file("."))
+  .enablePlugins(PackPlugin)
   .enablePlugins(Smithy4sCodegenPlugin)
   .settings(
     organization := "com.myapiz",
@@ -22,6 +22,7 @@ lazy val root = (project in file("."))
       "-language:strictEquality"
     ),
     libraryDependencies ++= Seq(
+      // basic api
       "org.typelevel" %% "cats-effect" % CatsVersion,
       "org.http4s" %% "http4s-ember-server" % Http4sVersion,
       "org.http4s" %% "http4s-ember-client" % Http4sVersion,
@@ -32,17 +33,15 @@ lazy val root = (project in file("."))
       "com.disneystreaming.smithy4s" %% "smithy4s-http4s-swagger" % smithy4sVersion.value,
       "com.disneystreaming.alloy" % "alloy-core" % "0.3.11",
       "io.circe" %% "circe-parser" % CirceVersion,
-      // otp
-      "com.github.bastiaanjansen" % "otp-java" % "2.0.3",
       // Loggin
       "org.fusesource.jansi" % "jansi" % "2.4.1",
+      // otp
+      "com.github.bastiaanjansen" % "otp-java" % "2.0.3",
       // TEST
       "org.scalameta" %% "munit" % MunitVersion % Test,
       "org.typelevel" %% "munit-cats-effect" % MunitCatsEffectVersion % Test,
       "ch.qos.logback" % "logback-classic" % LogbackVersion % Runtime
     ),
-    assembly / assemblyMergeStrategy := {
-      case "module-info.class" => MergeStrategy.discard
-      case x                   => (assembly / assemblyMergeStrategy).value.apply(x)
-    }
+    testFrameworks += new TestFramework("munit.Framework"),
+    Compile / mainClass := Some("com.myapiz.microapis.Main")
   )
