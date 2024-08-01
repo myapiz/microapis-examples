@@ -1,0 +1,33 @@
+# flyctl launch added from .gitignore
+# Created by https://www.gitignore.io/api/sbt,scala
+# Edit at https://www.gitignore.io/?templates=sbt,scala
+
+### SBT ###
+# Simple Build Tool
+# http://www.scala-sbt.org/release/docs/Getting-Started/Directories.html#configuring-version-control
+
+**/dist/*
+**/out
+**/src
+**/target
+!**/target/pack
+**/lib_managed
+**/src_managed
+**/project/boot
+**/project/plugins/project
+**/.history
+**/.cache
+**/.lib
+**/.idea
+
+### Scala ###
+**/*.class
+**/*.log
+
+# End of https://www.gitignore.io/api/sbt,scala
+
+# flyctl launch added from .idea/.gitignore
+# Default ignored files
+.idea/shelf
+.idea/workspace.xml
+fly.toml
