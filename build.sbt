@@ -35,12 +35,12 @@ lazy val root = (project in file("."))
       "io.circe" %% "circe-parser" % CirceVersion,
       // Loggin
       "org.fusesource.jansi" % "jansi" % "2.4.1",
+      "ch.qos.logback" % "logback-classic" % LogbackVersion,
       // otp
       "com.github.bastiaanjansen" % "otp-java" % "2.0.3",
       // TEST
       "org.scalameta" %% "munit" % MunitVersion % Test,
-      "org.typelevel" %% "munit-cats-effect" % MunitCatsEffectVersion % Test,
-      "ch.qos.logback" % "logback-classic" % LogbackVersion % Runtime
+      "org.typelevel" %% "munit-cats-effect" % MunitCatsEffectVersion % Test
     ),
     testFrameworks += new TestFramework("munit.Framework"),
     Compile / mainClass := Some("com.myapiz.microapis.Main")

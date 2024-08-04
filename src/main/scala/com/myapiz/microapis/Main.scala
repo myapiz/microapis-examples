@@ -40,7 +40,7 @@ object Main extends IOApp.Simple {
         EmberServerBuilder
           .default[IO]
           .withPort(port"9000")
-          .withHost(host"localhost")
+          .withHost(host"0.0.0.0")
           .withHttpApp(routes.orNotFound)
           .build
       }

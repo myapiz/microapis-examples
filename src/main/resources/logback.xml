@@ -13,4 +13,6 @@
   <root level="INFO">
     <appender-ref ref="STDOUT" />
   </root>
+  <logger name="com.myapiz" level="DEBUG"/>
+  <logger name="org.http4s.server.message-failures" level="DEBUG"/>
 </configuration>
