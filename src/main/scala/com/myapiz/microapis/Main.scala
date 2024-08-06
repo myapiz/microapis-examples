@@ -3,18 +3,20 @@ package com.myapiz.microapis
 import cats.effect.*
 import cats.implicits.*
 import com.comcast.ip4s.*
-import com.myapiz.microapis.AuthMiddleware.AuthData
-import com.myapiz.microapis.otp.{TimeBasedOTPServiceImpl, Service}
+import com.myapiz.microapis.otp.{TOTP, TimeBasedOTPServiceImpl}
+import com.myapiz.smithy4s.middleware.*
+import com.myapiz.smithy4s.middleware.AuthMiddleware.AuthData
 import org.http4s.*
 import org.http4s.ember.server.*
 import org.http4s.implicits.*
-import smithy4s.http4s.SimpleRestJsonBuilder
+import org.http4s.server.middleware.{ErrorHandling, Logger, RequestId}
+import smithy4s.interopcats.monoidEndpointMiddleware
 
 object Routes {
 
-  private val docs: HttpRoutes[IO] = smithy4s.http4s.swagger.docs[IO](Service)
+  private val docs: HttpRoutes[IO] = smithy4s.http4s.swagger.docs[IO](TOTP)
 
-  def getAll(local: IOLocal[Option[AuthData]]) = {
+  def getAll(local: IOLocal[Option[AuthData]]): Resource[IO, HttpRoutes[IO]] = {
     val getAuthData: IO[AuthData] = local.get.flatMap {
       case Some(value) => IO.pure(value)
       case None =>
@@ -24,7 +26,13 @@ object Routes {
     }
     smithy4s.http4s.SimpleRestJsonBuilder
       .routes(new TimeBasedOTPServiceImpl(getAuthData))
-      .middleware(AuthMiddleware(local))
+      .middleware(
+        AuthzMiddleware(local) |+| AuthMiddleware(local) |+| Http4sMiddleware(
+          ErrorHandling.httpApp
+        ) |+| Http4sMiddleware(Logger.httpApp(logHeaders = true, logBody = false)) |+| Http4sMiddleware(
+          RequestId.httpApp.apply
+        )
+      )
       .resource
       .map(_ <+> docs)
   }

@@ -1,11 +1,11 @@
 package com.myapiz.microapis.otp
 
 import cats.effect.IO
-import com.myapiz.microapis.AuthMiddleware.AuthData
+import com.myapiz.smithy4s.middleware.AuthMiddleware.AuthData
 
 import scala.concurrent.duration.*
 
-class TimeBasedOTPServiceImpl(authData: IO[AuthData]) extends Service[IO] with OneTimePassword {
+class TimeBasedOTPServiceImpl(authData: IO[AuthData]) extends TOTP[IO] with OneTimePassword {
 
   override def generate(id: ID, ttl: Int, size: Int): IO[OTP] = for {
     data <- authData

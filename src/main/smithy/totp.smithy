@@ -5,19 +5,25 @@ namespace com.myapiz.microapis.otp
 use smithy.api#required
 use alloy#simpleRestJson
 
+use com.myapiz.smithy.error#NotFoundError
+use com.myapiz.smithy.error#NotAuthenticatedError
+use com.myapiz.smithy.error#NotAuthorizedError
+use com.myapiz.smithy.auth#authorization
+
 string Code
 string ID
 
 
 @simpleRestJson
 @httpApiKeyAuth(name: "X-myapiz-user", in: "header")
-service Service {
+service TOTP {
     version: "1.0.0"
     operations: [Generate, Validate]
-    errors: [NotAuthorizedError]
+    errors: [NotAuthorizedError, NotAuthenticatedError, NotFoundError]
 }
 
 @http(method: "POST", uri: "/totp/{id}", code: 200)
+@authorization(allow: ["write"])
 operation Generate {
     input: GenerateRequest
     output: OTP
@@ -25,6 +31,7 @@ operation Generate {
 
 @readonly
 @http(method: "GET", uri: "/totp/{id}/{code}", code: 200)
+@authorization(allow: ["read"])
 operation Validate {
     input: ValidationRequest
     output: ValidationResponse
@@ -63,10 +70,3 @@ structure ValidationResponse {
     valid: Boolean
 }
 
-
-@error("client")
-@httpError(401)
-structure NotAuthorizedError {
-    @required
-    message: String
-}

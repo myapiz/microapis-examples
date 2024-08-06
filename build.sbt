@@ -6,6 +6,10 @@ val MunitCatsEffectVersion = "2.0.0"
 val CatsVersion = "3.5.4"
 val smithyVersion = "1.50.0"
 
+val versions = new {
+  val myapiz = "0.0.1-SNAPSHOT"
+}
+
 lazy val root = (project in file("."))
   .enablePlugins(PackPlugin)
   .enablePlugins(Smithy4sCodegenPlugin)
@@ -21,6 +25,9 @@ lazy val root = (project in file("."))
       "-language:unsafeNulls",
       "-language:strictEquality"
     ),
+    githubOwner := "myapiz",
+    updateOptions := updateOptions.value.withLatestSnapshots(true),
+    resolvers += Resolver.githubPackages("myapiz", "smithy"),
     libraryDependencies ++= Seq(
       // basic api
       "org.typelevel" %% "cats-effect" % CatsVersion,
@@ -33,6 +40,8 @@ lazy val root = (project in file("."))
       "com.disneystreaming.smithy4s" %% "smithy4s-http4s-swagger" % smithy4sVersion.value,
       "com.disneystreaming.alloy" % "alloy-core" % "0.3.11",
       "io.circe" %% "circe-parser" % CirceVersion,
+      "com.myapiz" % "smithy4s_3" % versions.myapiz,
+
       // Loggin
       "org.fusesource.jansi" % "jansi" % "2.4.1",
       "ch.qos.logback" % "logback-classic" % LogbackVersion,
