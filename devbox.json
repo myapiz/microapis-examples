@@ -1,0 +1,27 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.12.0/.schema/devbox.schema.json",
+  "name":    "sheet",
+  "packages": [
+    "ripgrep@latest",
+    "watchman@latest",
+    "openssl@latest",
+    "flyctl@latest",
+    "chezmoi@latest",
+    "zsh@latest",
+    "neovim@latest",
+    "gh@latest",
+    "gnupg@latest",
+    "direnv@latest",
+    "starship@latest",
+    "fzf@latest",
+    "mise@latest",
+    "aws@latest",
+    "lazygit@latest",
+    "jdk@21",
+    "sbt@latest"
+  ],
+  "shell": {
+    "init_hook": [],
+    "scripts":   {}
+  }
+}
