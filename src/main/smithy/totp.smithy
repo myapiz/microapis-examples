@@ -81,7 +81,6 @@ structure ValidationOutput {
     valid: Boolean
 }
 
-
 apply Generate
 @examples([
     {
@@ -94,6 +93,23 @@ apply Generate
         }
         output: {
             code: "123456"
+        }
+    }
+])
+
+
+apply Validate
+@examples([
+    {
+        title: "Validate generated code",
+        documentation: "Validate a code for the given ID and TTL."
+        input: {
+            code: "123456",
+            id: "code-user-myapiz",
+            ttl: 60
+        }
+        output: {
+            valid: true
         }
     }
 ])
