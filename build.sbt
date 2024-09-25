@@ -7,7 +7,7 @@ val CatsVersion = "3.5.4"
 val smithyVersion = "1.50.0"
 
 val versions = new {
-  val myapiz = "0.0.1-SNAPSHOT"
+  val myapiz = "0.1.0"
 }
 
 lazy val root = (project in file("."))
