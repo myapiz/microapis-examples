@@ -27,7 +27,7 @@ service TOTP {
     errors: [NotAuthorizedError, NotAuthenticatedError, NotFoundError]
 }
 
-@http(method: "POST", uri: "/totp/{id}", code: 200)
+@http(method: "POST", uri: "/{id}", code: 200)
 @authorization(allow: ["write"])
 @documentation("Generate a new time-based one-time password for the given resource identifier. The generated code is valid for a specified time-to-live (TTL) in seconds.")
 @tags(["security"])
@@ -37,7 +37,7 @@ operation Generate {
 }
 
 @readonly
-@http(method: "GET", uri: "/totp/{id}/{code}", code: 200)
+@http(method: "GET", uri: "/{id}/{code}", code: 200)
 @authorization(allow: ["read"])
 @documentation("Validates a code created with the given ID. If the code was created with the same ID and within the TTL seconds of its creation then it is considered valid. The validation returns a boolean value indicating whether the code is valid or not.")
 @tags(["security"])
@@ -113,5 +113,4 @@ apply Validate
         }
     }
 ])
-
 
