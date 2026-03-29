@@ -5,16 +5,55 @@ import cats.effect.*
 import cats.implicits.*
 import com.comcast.ip4s.*
 import com.myapiz.microapis.otp.{TOTP, TimeBasedOTPServiceImpl}
+import com.myapiz.smithy.auth.Permission
 import com.myapiz.smithy.error.{NotAuthenticatedError, NotAuthorizedError}
 import com.myapiz.smithy4s.middleware.*
 import com.myapiz.smithy4s.middleware.AuthMiddleware.AuthData
 import io.circe.Json
+import io.circe.parser.parse
 import org.http4s.*
 import org.http4s.circe.CirceEntityEncoder.*
 import org.http4s.ember.server.*
 import org.http4s.implicits.*
 import org.http4s.server.middleware.{ErrorHandling, Logger, RequestId}
+import org.typelevel.ci.CIStringSyntax
 import smithy4s.interopcats.monoidEndpointMiddleware
+
+object AuthHeaderNormalization {
+
+  private val authHeaderName = ci"X-Myapiz-User"
+  private val allPermissions = Permission.values.map(_.value)
+  private val wildcard = Json.fromString("*")
+
+  private def normalizeHeaderValue(rawValue: String): String =
+    parse(rawValue)
+      .flatMap { json =>
+        val cursor = json.hcursor
+        cursor.downField("perms").focus match {
+          case Some(jsonValue) if jsonValue.isNull => Right(rawValue)
+          case Some(jsonArray) if jsonArray.asArray.exists(_.contains(wildcard)) =>
+            cursor
+              .downField("perms")
+              .withFocus(_ => Json.fromValues(allPermissions.map(Json.fromString)))
+              .top
+              .map(_.noSpaces)
+              .toRight(io.circe.ParsingFailure("failed to rebuild normalized auth header", null))
+          case _ => Right(rawValue)
+        }
+      }
+      .getOrElse(rawValue)
+
+  def httpApp(app: HttpApp[IO]): HttpApp[IO] =
+    Kleisli { req =>
+      val normalizedHeaders = req.headers.headers.map {
+        case header if header.name.equals(authHeaderName) =>
+          Header.Raw(authHeaderName, normalizeHeaderValue(header.value))
+        case header => header
+      }
+
+      app(req.withHeaders(Headers(normalizedHeaders)))
+    }
+}
 
 object ServiceErrorHandling {
 
@@ -102,7 +141,7 @@ object Main extends IOApp.Simple {
           .default[IO]
           .withPort(port"9000")
           .withHost(host"0.0.0.0")
-          .withHttpApp(ServiceErrorHandling.httpApp(routes.orNotFound))
+          .withHttpApp(ServiceErrorHandling.httpApp(AuthHeaderNormalization.httpApp(routes.orNotFound)))
           .build
       }
       .use(_ => IO.never)
