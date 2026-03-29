@@ -41,26 +41,28 @@ object ServiceErrorHandling {
   }
 
   def httpApp(app: HttpApp[IO]): HttpApp[IO] =
-    Kleisli { req =>
-      app(req).handleErrorWith {
-        case error: NotAuthenticatedError =>
-          problemResponse(
-            statusCode = error.status,
-            title = safeTitle(error.title, "not authenticated"),
-            detail = error.detail.toList.headOption,
-            problemType = error._type.map(_.toString),
-            instance = error.instance.map(_.toString)
-          )
-        case error: NotAuthorizedError =>
-          problemResponse(
-            statusCode = error.status,
-            title = safeTitle(error.title, "not authorized"),
-            detail = error.detail.toList.headOption,
-            problemType = error._type.map(_.toString),
-            instance = error.instance.map(_.toString)
-          )
+    ErrorHandling.httpApp(
+      Kleisli { req =>
+        app(req).handleErrorWith {
+          case error: NotAuthenticatedError =>
+            problemResponse(
+              statusCode = error.status,
+              title = safeTitle(error.title, "not authenticated"),
+              detail = error.detail.toList.headOption,
+              problemType = error._type.map(_.toString),
+              instance = error.instance.map(_.toString)
+            )
+          case error: NotAuthorizedError =>
+            problemResponse(
+              statusCode = error.status,
+              title = safeTitle(error.title, "not authorized"),
+              detail = error.detail.toList.headOption,
+              problemType = error._type.map(_.toString),
+              instance = error.instance.map(_.toString)
+            )
+        }
       }
-    }
+    )
 }
 
 object Routes {
@@ -79,7 +81,7 @@ object Routes {
       .routes(new TimeBasedOTPServiceImpl(getAuthData))
       .middleware(
         AuthzMiddleware(local) |+| AuthMiddleware(local) |+| Http4sMiddleware(
-          ErrorHandling.httpApp
+          ServiceErrorHandling.httpApp
         ) |+| Http4sMiddleware(Logger.httpApp(logHeaders = true, logBody = false)) |+| Http4sMiddleware(
           RequestId.httpApp.apply
         )
