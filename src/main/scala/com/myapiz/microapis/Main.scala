@@ -45,19 +45,19 @@ object ServiceErrorHandling {
       app(req).handleErrorWith {
         case error: NotAuthenticatedError =>
           problemResponse(
-            statusCode = error.status(),
-            title = safeTitle(error.title(), "not authenticated"),
-            detail = error.detail().toList.headOption,
-            problemType = error._type().toList.headOption,
-            instance = error.instance().toList.headOption
+            statusCode = error.status,
+            title = safeTitle(error.title, "not authenticated"),
+            detail = error.detail.toList.headOption,
+            problemType = error._type.map(_.toString),
+            instance = error.instance.map(_.toString)
           )
         case error: NotAuthorizedError =>
           problemResponse(
-            statusCode = error.status(),
-            title = safeTitle(error.title(), "not authorized"),
-            detail = error.detail().toList.headOption,
-            problemType = error._type().toList.headOption,
-            instance = error.instance().toList.headOption
+            statusCode = error.status,
+            title = safeTitle(error.title, "not authorized"),
+            detail = error.detail.toList.headOption,
+            problemType = error._type.map(_.toString),
+            instance = error.instance.map(_.toString)
           )
       }
     }
